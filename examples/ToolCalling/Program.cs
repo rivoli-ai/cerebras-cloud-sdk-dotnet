@@ -398,7 +398,18 @@ class Program
             {
                 foreach (var toolCall in chunk.Choices[0].Delta.ToolCalls)
                 {
-                    var index = toolCall.Index ?? 0;
+                    var toolId = toolCall.Id;
+                    var index = toolCalls.Count;
+                    
+                    // Find existing tool call by ID
+                    foreach (var kvp in toolCalls)
+                    {
+                        if (kvp.Value.id == toolId)
+                        {
+                            index = kvp.Key;
+                            break;
+                        }
+                    }
                     
                     if (!toolCalls.ContainsKey(index))
                     {

@@ -88,3 +88,4 @@ coverage-report/
 *.opencover.xml
 *.cobertura.xml
 coverage.json
+tools/
