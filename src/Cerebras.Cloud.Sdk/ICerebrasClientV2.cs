@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cerebras.Cloud.Sdk.Chat;
 using Cerebras.Cloud.Sdk.Completions;
+using Cerebras.Cloud.Sdk.Models;
 
 namespace Cerebras.Cloud.Sdk;
 
@@ -20,6 +21,11 @@ public interface ICerebrasClientV2 : ICerebrasClient
     /// Gets the text completion service.
     /// </summary>
     ICompletionService Completions { get; }
+
+    /// <summary>
+    /// Gets the models service.
+    /// </summary>
+    IModelsService Models { get; }
 
     /// <summary>
     /// Creates a chat completion.

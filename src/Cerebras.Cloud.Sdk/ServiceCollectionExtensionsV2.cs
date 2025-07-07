@@ -73,8 +73,7 @@ public static class ServiceCollectionExtensionsV2
             client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
         });
 
-        // Register services
-        services.AddTransient<IHttpService, HttpService>();
+        // Register services (HttpService is already registered by AddHttpClient)
         services.AddTransient<IChatCompletionService, ChatCompletionService>();
         services.AddTransient<ICompletionService, CompletionService>();
         services.AddTransient<IModelsService, ModelsService>();

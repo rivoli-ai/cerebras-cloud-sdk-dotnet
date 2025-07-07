@@ -29,6 +29,9 @@ public class CerebrasClientV2 : ICerebrasClientV2
     /// <inheritdoc />
     public ICompletionService Completions => _completionService;
 
+    /// <inheritdoc />
+    public IModelsService Models => _modelsService;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CerebrasClientV2"/> class.
     /// </summary>

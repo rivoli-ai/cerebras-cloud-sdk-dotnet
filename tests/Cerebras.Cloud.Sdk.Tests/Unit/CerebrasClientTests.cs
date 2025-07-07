@@ -110,7 +110,7 @@ public class CerebrasClientTests
         Assert.Equal(8, result.Usage.CompletionTokens);
     }
 
-    [Fact(Skip = "Need to fix test setup - API key check happens but test is seeing different error")]
+    [Fact]
     public async Task GenerateCompletionAsync_MissingApiKey_ThrowsException()
     {
         // Arrange

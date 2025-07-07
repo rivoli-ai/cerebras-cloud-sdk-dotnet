@@ -104,7 +104,7 @@ public record ChatMessage
     /// <summary>
     /// The content of the message.
     /// </summary>
-    public required string Content { get; init; }
+    public string? Content { get; init; }
 
     /// <summary>
     /// The name of the author of this message.
