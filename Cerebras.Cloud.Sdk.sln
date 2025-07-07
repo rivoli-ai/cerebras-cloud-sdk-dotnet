@@ -1,0 +1,35 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5F2A96F7-3720-4D23-9E4D-5A1E7F7C8D35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cerebras.Cloud.Sdk", "src\Cerebras.Cloud.Sdk\Cerebras.Cloud.Sdk.csproj", "{A1B2C3D4-5678-9101-1121-314151617181}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7F2A96F7-3720-4D23-9E4D-5A1E7F7C8D36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cerebras.Cloud.Sdk.Tests", "tests\Cerebras.Cloud.Sdk.Tests\Cerebras.Cloud.Sdk.Tests.csproj", "{B1B2C3D4-5678-9101-1121-314151617182}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1B2C3D4-5678-9101-1121-314151617181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-5678-9101-1121-314151617181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-5678-9101-1121-314151617181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-5678-9101-1121-314151617181}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1B2C3D4-5678-9101-1121-314151617182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1B2C3D4-5678-9101-1121-314151617182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1B2C3D4-5678-9101-1121-314151617182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1B2C3D4-5678-9101-1121-314151617182}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A1B2C3D4-5678-9101-1121-314151617181} = {5F2A96F7-3720-4D23-9E4D-5A1E7F7C8D35}
+		{B1B2C3D4-5678-9101-1121-314151617182} = {7F2A96F7-3720-4D23-9E4D-5A1E7F7C8D36}
+	EndGlobalSection
+EndGlobal
