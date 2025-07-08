@@ -282,12 +282,12 @@ public class CerebrasClient : ICerebrasClient
                 }
 
                 var choice = chunk?.Choices?.FirstOrDefault();
-                if (choice?.Delta?.Content != null)
+                if (choice != null)
                 {
                     yield return new CompletionChunk
                     {
-                        Text = choice.Delta.Content,
-                        IsFinished = false,
+                        Text = choice.Delta?.Content ?? "",
+                        IsFinished = choice.FinishReason != null,
                         FinishReason = choice.FinishReason
                     };
                 }

@@ -217,7 +217,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
             });
             
             // Add tool response
-            var toolCall = initialResponse.Choices[0].Message.ToolCalls[0];
+            var toolCall = initialResponse.Choices[0].Message.ToolCalls![0];
             messages.Add(new()
             {
                 Role = "tool",
@@ -335,7 +335,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
         
         if (response.Choices[0].Message.ToolCalls?.Any() == true)
         {
-            var toolCall = response.Choices[0].Message.ToolCalls[0];
+            var toolCall = response.Choices[0].Message.ToolCalls![0];
             _output.WriteLine($"Selected tool: {toolCall.Function.Name}");
             _output.WriteLine($"Arguments: {toolCall.Function.Arguments}");
             
@@ -407,7 +407,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
             if (chunk.Choices[0].Delta?.ToolCalls != null)
             {
                 toolCallsFound = true;
-                foreach (var toolCall in chunk.Choices[0].Delta.ToolCalls)
+                foreach (var toolCall in chunk.Choices[0].Delta.ToolCalls!)
                 {
                     if (!string.IsNullOrEmpty(toolCall.Id))
                         _output.WriteLine($"Tool call ID: {toolCall.Id}");

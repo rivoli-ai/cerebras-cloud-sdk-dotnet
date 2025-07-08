@@ -105,7 +105,7 @@ class Program
         if (response.Choices[0].Message.ToolCalls != null)
         {
             Console.WriteLine("Assistant wants to call tools:");
-            foreach (var toolCall in response.Choices[0].Message.ToolCalls)
+            foreach (var toolCall in response.Choices[0].Message.ToolCalls!)
             {
                 Console.WriteLine($"  Tool: {toolCall.Function.Name}");
                 Console.WriteLine($"  Arguments: {toolCall.Function.Arguments}");
@@ -202,7 +202,7 @@ class Program
         if (response.Choices[0].Message.ToolCalls != null)
         {
             Console.WriteLine("Assistant wants to call the following tools:");
-            foreach (var toolCall in response.Choices[0].Message.ToolCalls)
+            foreach (var toolCall in response.Choices[0].Message.ToolCalls!)
             {
                 Console.WriteLine($"  Tool: {toolCall.Function.Name}");
                 Console.WriteLine($"  ID: {toolCall.Id}");
@@ -295,7 +295,7 @@ class Program
             });
             
             Console.WriteLine("Assistant called tools:");
-            foreach (var toolCall in assistantMessage.ToolCalls)
+            foreach (var toolCall in assistantMessage.ToolCalls!)
             {
                 Console.WriteLine($"  Calling {toolCall.Function.Name} with {toolCall.Function.Arguments}");
                 
@@ -396,7 +396,7 @@ class Program
             
             if (chunk.Choices[0].Delta?.ToolCalls != null)
             {
-                foreach (var toolCall in chunk.Choices[0].Delta.ToolCalls)
+                foreach (var toolCall in chunk.Choices[0].Delta.ToolCalls!)
                 {
                     var toolId = toolCall.Id;
                     var index = toolCalls.Count;
