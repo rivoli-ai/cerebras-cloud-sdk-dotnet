@@ -2,7 +2,7 @@ name: Build and Release
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
     tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
@@ -42,10 +42,8 @@ jobs:
         # Determine version
         if [[ $GITHUB_REF == refs/tags/v* ]]; then
           VERSION=${GITHUB_REF#refs/tags/v}
-        elif [[ $GITHUB_REF == refs/heads/main ]]; then
-          VERSION=$(date +%Y.%m.%d)-rc.$GITHUB_RUN_NUMBER
         else
-          VERSION=$(date +%Y.%m.%d)-beta.$GITHUB_RUN_NUMBER
+          VERSION=$(date +%Y.%m.%d)-rc.$GITHUB_RUN_NUMBER
         fi
         
         echo "VERSION=$VERSION" >> $GITHUB_ENV
@@ -66,7 +64,7 @@ jobs:
   publish-prerelease:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/main'
     
     steps:
     - name: Download artifacts
