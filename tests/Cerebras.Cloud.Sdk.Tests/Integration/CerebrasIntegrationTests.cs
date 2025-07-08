@@ -19,15 +19,28 @@ namespace Cerebras.Cloud.Sdk.Tests.Integration;
 [Collection("Integration Tests")]
 public class CerebrasIntegrationTests : IAsyncLifetime
 {
-    private readonly ServiceProvider _serviceProvider;
-    private readonly ICerebrasClient _client;
-    private readonly ILogger<CerebrasIntegrationTests> _logger;
+    private ServiceProvider? _serviceProvider;
+    private ICerebrasClient? _client;
+    private ILogger<CerebrasIntegrationTests>? _logger;
 
     public CerebrasIntegrationTests()
     {
+        // Initialization moved to InitializeAsync
+    }
+
+    public async Task InitializeAsync()
+    {
+        // Get API key from environment
+        var apiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
+        
         // Build configuration
         var configuration = new ConfigurationBuilder()
-            .AddEnvironmentVariables()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "CerebrasClient:ApiKey", apiKey },
+                { "CerebrasClient:BaseUrl", "https://api.cerebras.ai/v1/" },
+                { "CerebrasClient:DefaultModel", "llama-3.3-70b" }
+            })
             .AddJsonFile("appsettings.json", optional: true)
             .Build();
 
@@ -51,46 +64,39 @@ public class CerebrasIntegrationTests : IAsyncLifetime
 
         _client = _serviceProvider.GetRequiredService<ICerebrasClient>();
         _logger = _serviceProvider.GetRequiredService<ILogger<CerebrasIntegrationTests>>();
-    }
-
-    public async Task InitializeAsync()
-    {
-        // Check if API key is available
-        var configuration = _serviceProvider.GetRequiredService<IConfiguration>();
-        var options = configuration.GetSection(CerebrasClientOptions.SectionName).Get<CerebrasClientOptions>();
-        var apiKey = options?.ApiKey ?? Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
-
+        
         if (string.IsNullOrEmpty(apiKey))
         {
             throw new InvalidOperationException(
                 "Cerebras API key not found. Set CEREBRAS_API_KEY environment variable or configure in appsettings.json");
         }
 
-        _logger.LogInformation("Starting Cerebras integration tests with API key configured");
+        _logger!.LogInformation("Starting Cerebras integration tests with API key configured");
         await Task.CompletedTask;
     }
 
     public async Task DisposeAsync()
     {
-        await _serviceProvider.DisposeAsync();
+        if (_serviceProvider != null)
+            await _serviceProvider.DisposeAsync();
     }
 
     [Fact]
     public async Task ListModelsAsync_ShouldReturnAvailableModels()
     {
         // Act
-        var models = await _client.ListModelsAsync();
+        var models = await _client!.ListModelsAsync();
 
         // Assert
         Assert.NotNull(models);
         Assert.NotEmpty(models);
 
-        _logger.LogInformation("Retrieved {Count} models from Cerebras API", models.Count);
+        _logger!.LogInformation("Retrieved {Count} models from Cerebras API", models.Count);
 
         // Log all available models
         foreach (var model in models)
         {
-            _logger.LogInformation("Model: {Id} - {Name} (Available: {IsAvailable})",
+            _logger!.LogInformation("Model: {Id} - {Name} (Available: {IsAvailable})",
                 model.Id, model.Name, model.IsAvailable);
         }
 
@@ -102,19 +108,19 @@ public class CerebrasIntegrationTests : IAsyncLifetime
     public async Task GetModelAsync_WithValidModel_ShouldReturnModelDetails()
     {
         // Arrange - First get available models
-        var models = await _client.ListModelsAsync();
+        var models = await _client!.ListModelsAsync();
         Assert.NotEmpty(models);
         var firstModel = models.First();
 
         // Act
-        var model = await _client.GetModelAsync(firstModel.Id);
+        var model = await _client!.GetModelAsync(firstModel.Id);
 
         // Assert
         Assert.NotNull(model);
         Assert.Equal(firstModel.Id, model.Id);
         Assert.NotEmpty(model.Name);
 
-        _logger.LogInformation("Retrieved model details: {Model}", model.Id);
+        _logger!.LogInformation("Retrieved model details: {Model}", model.Id);
     }
 
     [Fact]
@@ -122,10 +128,10 @@ public class CerebrasIntegrationTests : IAsyncLifetime
     {
         // Act & Assert
         var exception = await Assert.ThrowsAsync<CerebrasApiException>(
-            async () => await _client.GetModelAsync("non-existent-model-12345"));
+            async () => await _client!.GetModelAsync("non-existent-model-12345"));
 
         Assert.Contains("not found", exception.Message, StringComparison.OrdinalIgnoreCase);
-        _logger.LogInformation("Correctly threw exception for invalid model");
+        _logger!.LogInformation("Correctly threw exception for invalid model");
     }
 
     [Fact]
@@ -141,7 +147,7 @@ public class CerebrasIntegrationTests : IAsyncLifetime
         };
 
         // Act
-        var response = await _client.GenerateCompletionAsync(request);
+        var response = await _client!.GenerateCompletionAsync(request);
 
         // Assert
         Assert.NotNull(response);
@@ -153,7 +159,7 @@ public class CerebrasIntegrationTests : IAsyncLifetime
         Assert.True(response.Usage.CompletionTokens > 0);
         Assert.True(response.Usage.TotalTokens > 0);
 
-        _logger.LogInformation("Generated completion: '{Text}' (Tokens: {Total})",
+        _logger!.LogInformation("Generated completion: '{Text}' (Tokens: {Total})",
             response.Text.Trim(), response.Usage.TotalTokens);
 
         // Verify the response makes sense (should contain Paris)
@@ -173,10 +179,10 @@ public class CerebrasIntegrationTests : IAsyncLifetime
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<CerebrasApiException>(
-            async () => await _client.GenerateCompletionAsync(request));
+            async () => await _client!.GenerateCompletionAsync(request));
 
         Assert.NotNull(exception);
-        _logger.LogInformation("Correctly threw exception for invalid model");
+        _logger!.LogInformation("Correctly threw exception for invalid model");
     }
 
     [Fact]
@@ -195,7 +201,7 @@ public class CerebrasIntegrationTests : IAsyncLifetime
         var completedChunks = 0;
 
         // Act
-        await foreach (var chunk in _client.GenerateCompletionStreamAsync(request))
+        await foreach (var chunk in _client!.GenerateCompletionStreamAsync(request))
         {
             chunks.Add(chunk.Text);
             if (chunk.IsFinished)
@@ -209,7 +215,7 @@ public class CerebrasIntegrationTests : IAsyncLifetime
         Assert.True(completedChunks > 0);
 
         var fullResponse = string.Join("", chunks);
-        _logger.LogInformation("Streamed completion: '{Response}' ({ChunkCount} chunks)",
+        _logger!.LogInformation("Streamed completion: '{Response}' ({ChunkCount} chunks)",
             fullResponse.Trim(), chunks.Count);
 
         // Verify the response contains numbers

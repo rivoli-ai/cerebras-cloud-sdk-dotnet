@@ -14,22 +14,32 @@ namespace Cerebras.Cloud.Sdk.Tests.Integration;
 [Collection("Integration Tests")]
 public class ToolCallingIntegrationTests : IAsyncLifetime
 {
-    private readonly ServiceProvider _serviceProvider;
-    private readonly ICerebrasClientV2 _client;
+    private ServiceProvider? _serviceProvider;
+    private ICerebrasClientV2? _client;
     private readonly ITestOutputHelper _output;
-    private readonly string? _apiKey;
+    private string? _apiKey;
 
     public ToolCallingIntegrationTests(ITestOutputHelper output)
     {
         _output = output;
+        // Initialization moved to InitializeAsync
+    }
+
+    public async Task InitializeAsync()
+    {
+        // Get API key from environment
+        _apiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
         
         // Build configuration
         var configuration = new ConfigurationBuilder()
-            .AddEnvironmentVariables()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "CerebrasClient:ApiKey", _apiKey },
+                { "CerebrasClient:BaseUrl", "https://api.cerebras.ai/v1/" },
+                { "CerebrasClient:DefaultModel", "llama-3.3-70b" }
+            })
             .AddJsonFile("appsettings.json", optional: true)
             .Build();
-
-        _apiKey = configuration["CEREBRAS_API_KEY"] ?? Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
 
         // Build service container
         var services = new ServiceCollection();
@@ -46,10 +56,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
 
         _serviceProvider = services.BuildServiceProvider();
         _client = _serviceProvider.GetRequiredService<ICerebrasClientV2>();
-    }
-
-    public async Task InitializeAsync()
-    {
+        
         if (string.IsNullOrEmpty(_apiKey))
         {
             throw new InvalidOperationException(
@@ -62,7 +69,8 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await _serviceProvider.DisposeAsync();
+        if (_serviceProvider != null)
+            await _serviceProvider.DisposeAsync();
     }
 
     [Fact]
@@ -115,7 +123,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
         };
 
         // Act
-        var response = await _client.Chat.CreateAsync(request);
+        var response = await _client!.Chat.CreateAsync(request);
 
         // Assert
         Assert.NotNull(response);
@@ -198,7 +206,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
             Temperature = 0.1
         };
 
-        var initialResponse = await _client.Chat.CreateAsync(initialRequest);
+        var initialResponse = await _client!.Chat.CreateAsync(initialRequest);
         
         // Build conversation with tool response
         var messages = new List<ChatMessage>
@@ -233,7 +241,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
                 Temperature = 0.7
             };
             
-            var followUpResponse = await _client.Chat.CreateAsync(followUpRequest);
+            var followUpResponse = await _client!.Chat.CreateAsync(followUpRequest);
             
             // Assert
             Assert.NotNull(followUpResponse);
@@ -328,7 +336,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
         };
 
         // Act
-        var response = await _client.Chat.CreateAsync(request);
+        var response = await _client!.Chat.CreateAsync(request);
 
         // Assert
         Assert.NotNull(response);
@@ -400,7 +408,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
         var chunks = new List<ChatCompletionChunk>();
         var toolCallsFound = false;
         
-        await foreach (var chunk in _client.Chat.CreateStreamAsync(request))
+        await foreach (var chunk in _client!.Chat.CreateStreamAsync(request))
         {
             chunks.Add(chunk);
             
@@ -478,7 +486,7 @@ public class ToolCallingIntegrationTests : IAsyncLifetime
         };
 
         // Act
-        var response = await _client.Chat.CreateAsync(request);
+        var response = await _client!.Chat.CreateAsync(request);
 
         // Assert
         Assert.NotNull(response);

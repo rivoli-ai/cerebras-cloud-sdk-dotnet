@@ -32,8 +32,16 @@ public static class ServiceCollectionExtensionsV2
             throw new ArgumentNullException(nameof(configuration));
 
         // Configure options
-        services.Configure<CerebrasClientOptions>(
-            configuration.GetSection(CerebrasClientOptions.SectionName));
+        services.Configure<CerebrasClientOptions>(options =>
+        {
+            configuration.GetSection(CerebrasClientOptions.SectionName).Bind(options);
+            
+            // If API key is not set in configuration, try environment variable
+            if (string.IsNullOrWhiteSpace(options.ApiKey))
+            {
+                options.ApiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
+            }
+        });
 
         return AddCerebrasClientCore(services);
     }
@@ -54,8 +62,17 @@ public static class ServiceCollectionExtensionsV2
         if (configureOptions == null)
             throw new ArgumentNullException(nameof(configureOptions));
 
-        // Configure options
-        services.Configure(configureOptions);
+        // Configure options  
+        services.Configure<CerebrasClientOptions>(options =>
+        {
+            configureOptions(options);
+            
+            // If API key is not set, try environment variable
+            if (string.IsNullOrWhiteSpace(options.ApiKey))
+            {
+                options.ApiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
+            }
+        });
 
         return AddCerebrasClientCore(services);
     }
