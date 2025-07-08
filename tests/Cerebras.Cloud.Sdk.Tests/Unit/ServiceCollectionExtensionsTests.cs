@@ -247,19 +247,8 @@ public class ServiceCollectionExtensionsTests
             Assert.False(result.Succeeded);
             Assert.Contains("MaxRetries cannot be negative", result.FailureMessage);
 
-            // Test missing API key (with no env var)
-            Environment.SetEnvironmentVariable("CEREBRAS_API_KEY", null);
-            invalidOptions = new CerebrasClientOptions
-            {
-                ApiKey = null,
-                BaseUrl = "https://api.cerebras.ai/v1/",
-                DefaultModel = "model",
-                TimeoutSeconds = 30,
-                MaxRetries = 3
-            };
-            result = validator.Validate(null, invalidOptions);
-            Assert.False(result.Succeeded);
-            Assert.Contains("ApiKey is required", result.FailureMessage);
+            // API key validation is now done at runtime in the services
+            // The validator no longer checks for API key to allow environment variable usage
         }
         finally
         {

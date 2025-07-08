@@ -65,13 +65,7 @@ public class CerebrasIntegrationTests : IAsyncLifetime
         _client = _serviceProvider.GetRequiredService<ICerebrasClient>();
         _logger = _serviceProvider.GetRequiredService<ILogger<CerebrasIntegrationTests>>();
         
-        if (string.IsNullOrEmpty(apiKey))
-        {
-            throw new InvalidOperationException(
-                "Cerebras API key not found. Set CEREBRAS_API_KEY environment variable or configure in appsettings.json");
-        }
-
-        _logger!.LogInformation("Starting Cerebras integration tests with API key configured");
+        _logger!.LogInformation("Starting Cerebras integration tests");
         await Task.CompletedTask;
     }
 

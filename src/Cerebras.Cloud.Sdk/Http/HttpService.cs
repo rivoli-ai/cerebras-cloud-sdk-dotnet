@@ -178,6 +178,10 @@ internal class HttpService : IHttpService
         {
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _options.ApiKey);
         }
+        else
+        {
+            throw new InvalidOperationException("API key is required. Set it in configuration or via CEREBRAS_API_KEY environment variable.");
+        }
 
         // Add user agent
         request.Headers.TryAddWithoutValidation("User-Agent", _userAgent);
