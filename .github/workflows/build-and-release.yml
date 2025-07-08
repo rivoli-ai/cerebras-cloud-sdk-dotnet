@@ -33,6 +33,8 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     
     - name: Test
+      env:
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
       run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
     
     - name: Pack
