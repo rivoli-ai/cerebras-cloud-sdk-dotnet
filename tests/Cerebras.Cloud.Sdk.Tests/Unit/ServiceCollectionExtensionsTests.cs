@@ -172,10 +172,6 @@ public class ServiceCollectionExtensionsTests
     {
         // Arrange
         var validator = new CerebrasClientOptionsValidator();
-        Environment.SetEnvironmentVariable("CEREBRAS_API_KEY", "test-key");
-
-        try
-        {
             // Test valid options
             var validOptions = new CerebrasClientOptions
             {
@@ -249,10 +245,5 @@ public class ServiceCollectionExtensionsTests
 
             // API key validation is now done at runtime in the services
             // The validator no longer checks for API key to allow environment variable usage
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("CEREBRAS_API_KEY", null);
-        }
     }
 }
