@@ -142,9 +142,9 @@ public class ToolCallingTests
         Assert.Single(response.Choices);
         Assert.Null(response.Choices[0].Message.Content);
         Assert.NotNull(response.Choices[0].Message.ToolCalls);
-        Assert.Single(response.Choices[0].Message.ToolCalls);
+        Assert.Single(response.Choices[0].Message.ToolCalls!);
         
-        var toolCall = response.Choices[0].Message.ToolCalls[0];
+        var toolCall = response.Choices[0].Message.ToolCalls![0];
         Assert.Equal("call_123", toolCall.Id);
         Assert.Equal("function", toolCall.Type);
         Assert.Equal("get_weather", toolCall.Function.Name);
@@ -415,9 +415,9 @@ public class ToolCallingTests
         // First chunk should have the tool call start
         var firstChunk = receivedChunks[0];
         Assert.NotNull(firstChunk.Choices[0].Delta.ToolCalls);
-        Assert.Single(firstChunk.Choices[0].Delta.ToolCalls);
-        Assert.Equal("call_1", firstChunk.Choices[0].Delta.ToolCalls[0].Id);
-        Assert.Equal("get_weather", firstChunk.Choices[0].Delta.ToolCalls[0].Function?.Name);
+        Assert.Single(firstChunk.Choices[0].Delta.ToolCalls!);
+        Assert.Equal("call_1", firstChunk.Choices[0].Delta.ToolCalls![0].Id);
+        Assert.Equal("get_weather", firstChunk.Choices[0].Delta.ToolCalls![0].Function?.Name);
         
         // Middle chunks should have arguments
         Assert.Contains("location", receivedChunks[1].Choices[0].Delta.ToolCalls?[0].Function?.Arguments ?? "");

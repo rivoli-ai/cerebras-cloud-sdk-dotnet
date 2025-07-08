@@ -32,8 +32,16 @@ public static class ServiceCollectionExtensions
         }
 
         // Configure options
-        services.Configure<CerebrasClientOptions>(
-            configuration.GetSection(CerebrasClientOptions.SectionName));
+        services.Configure<CerebrasClientOptions>(options =>
+        {
+            configuration.GetSection(CerebrasClientOptions.SectionName).Bind(options);
+            
+            // If API key is not set in configuration, try environment variable
+            if (string.IsNullOrWhiteSpace(options.ApiKey))
+            {
+                options.ApiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
+            }
+        });
 
         // Add options validation
         services.AddSingleton<IValidateOptions<CerebrasClientOptions>, CerebrasClientOptionsValidator>();
@@ -74,7 +82,16 @@ public static class ServiceCollectionExtensions
         }
 
         // Configure options
-        services.Configure(configureOptions);
+        services.Configure<CerebrasClientOptions>(options =>
+        {
+            configureOptions(options);
+            
+            // If API key is not set, try environment variable
+            if (string.IsNullOrWhiteSpace(options.ApiKey))
+            {
+                options.ApiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
+            }
+        });
 
         // Add options validation
         services.AddSingleton<IValidateOptions<CerebrasClientOptions>, CerebrasClientOptionsValidator>();

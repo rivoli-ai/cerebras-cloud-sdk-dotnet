@@ -1,0 +1,43 @@
+<Project>
+  <PropertyGroup>
+    <!-- Versioning -->
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix Condition="'$(GITHUB_REF)' == 'refs/heads/develop'">beta</VersionSuffix>
+    <VersionSuffix Condition="'$(GITHUB_REF)' == 'refs/heads/main'">rc</VersionSuffix>
+    
+    <!-- Common Package Properties -->
+    <Authors>Sami Ben Grine</Authors>
+    <Company>Rivoli AI</Company>
+    <Product>Cerebras Cloud SDK</Product>
+    <Copyright>Copyright © $(CurrentYear) $(Company)</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/rivoli-ai/cerebras-cloud-sdk-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/rivoli-ai/cerebras-cloud-sdk-dotnet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>cerebras;ai;llm;sdk;cloud;api;machine-learning</PackageTags>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
+    <!-- Build Configuration -->
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    
+    <!-- Code Quality -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Missing XML comment for publicly visible type or member -->
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <CurrentYear>$([System.DateTime]::Now.ToString("yyyy"))</CurrentYear>
+  </PropertyGroup>
+  
+  <!-- Source Link -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+</Project>

@@ -351,6 +351,7 @@ public class CerebrasClientV2Tests
             BaseUrl = "https://api.cerebras.ai/v1/"
         };
 
+        var originalApiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
         Environment.SetEnvironmentVariable("CEREBRAS_API_KEY", "env-test-key");
 
         try
@@ -368,7 +369,7 @@ public class CerebrasClientV2Tests
         }
         finally
         {
-            Environment.SetEnvironmentVariable("CEREBRAS_API_KEY", null);
+            Environment.SetEnvironmentVariable("CEREBRAS_API_KEY", originalApiKey);
         }
     }
 }

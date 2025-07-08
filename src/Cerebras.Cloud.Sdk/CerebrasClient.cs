@@ -43,12 +43,6 @@ public class CerebrasClient : ICerebrasClient
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
-        // If API key is not set in options, try to get it from environment variable
-        if (string.IsNullOrWhiteSpace(_options.ApiKey))
-        {
-            _options.ApiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
-        }
-
         // Ensure base address is set
         if (_httpClient.BaseAddress == null)
         {
@@ -85,10 +79,16 @@ public class CerebrasClient : ICerebrasClient
         {
             _logger.LogDebug("Generating completion with model {Model}", request.Model);
 
-            // Ensure API key is set
-            if (string.IsNullOrWhiteSpace(_options.ApiKey))
+            // Get API key from options or environment variable
+            var apiKey = _options.ApiKey;
+            if (string.IsNullOrWhiteSpace(apiKey))
             {
-                throw new InvalidOperationException("API key is not configured. Please set the ApiKey in CerebrasClientOptions.");
+                apiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
+            }
+            
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new InvalidOperationException("API key is not configured. Please set the ApiKey in CerebrasClientOptions or via CEREBRAS_API_KEY environment variable.");
             }
 
             var requestBody = new
@@ -120,7 +120,7 @@ public class CerebrasClient : ICerebrasClient
             var response = await _retryPolicy.ExecuteAsync(async () =>
             {
                 var httpRequest = new HttpRequestMessage(HttpMethod.Post, "chat/completions");
-                httpRequest.Headers.Add("Authorization", $"Bearer {_options.ApiKey}");
+                httpRequest.Headers.Add("Authorization", $"Bearer {apiKey}");
                 httpRequest.Content = JsonContent.Create(requestBody, options: _jsonOptions);
                 return await _httpClient.SendAsync(httpRequest, cancellationToken);
             });
@@ -197,15 +197,21 @@ public class CerebrasClient : ICerebrasClient
     {
         _logger.LogDebug("Generating streaming completion with model {Model}", request.Model);
 
-        // Ensure API key is set
-        if (string.IsNullOrWhiteSpace(_options.ApiKey))
+        // Get API key from options or environment variable
+        var apiKey = _options.ApiKey;
+        if (string.IsNullOrWhiteSpace(apiKey))
         {
-            throw new InvalidOperationException("API key is not configured. Please set the ApiKey in CerebrasClientOptions.");
+            apiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
+        }
+        
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            throw new InvalidOperationException("API key is not configured. Please set the ApiKey in CerebrasClientOptions or via CEREBRAS_API_KEY environment variable.");
         }
 
         // Prepare request
         var httpRequest = new HttpRequestMessage(HttpMethod.Post, "chat/completions");
-        httpRequest.Headers.Add("Authorization", $"Bearer {_options.ApiKey}");
+        httpRequest.Headers.Add("Authorization", $"Bearer {apiKey}");
 
         var requestBody = new
         {
@@ -282,12 +288,12 @@ public class CerebrasClient : ICerebrasClient
                 }
 
                 var choice = chunk?.Choices?.FirstOrDefault();
-                if (choice?.Delta?.Content != null)
+                if (choice != null)
                 {
                     yield return new CompletionChunk
                     {
-                        Text = choice.Delta.Content,
-                        IsFinished = false,
+                        Text = choice.Delta?.Content ?? "",
+                        IsFinished = choice.FinishReason != null,
                         FinishReason = choice.FinishReason
                     };
                 }
@@ -307,17 +313,23 @@ public class CerebrasClient : ICerebrasClient
         {
             _logger.LogDebug("Listing available Cerebras models");
 
-            // Ensure API key is set
-            if (string.IsNullOrWhiteSpace(_options.ApiKey))
+            // Get API key from options or environment variable
+            var apiKey = _options.ApiKey;
+            if (string.IsNullOrWhiteSpace(apiKey))
             {
-                throw new InvalidOperationException("API key is not configured. Please set the ApiKey in CerebrasClientOptions.");
+                apiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
+            }
+            
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new InvalidOperationException("API key is not configured. Please set the ApiKey in CerebrasClientOptions or via CEREBRAS_API_KEY environment variable.");
             }
 
             // Send request with retry
             var response = await _retryPolicy.ExecuteAsync(async () =>
             {
                 var httpRequest = new HttpRequestMessage(HttpMethod.Get, "models");
-                httpRequest.Headers.Add("Authorization", $"Bearer {_options.ApiKey}");
+                httpRequest.Headers.Add("Authorization", $"Bearer {apiKey}");
                 return await _httpClient.SendAsync(httpRequest, cancellationToken);
             });
 

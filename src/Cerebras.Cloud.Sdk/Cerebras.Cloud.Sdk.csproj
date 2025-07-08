@@ -4,19 +4,29 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     
     <!-- Package Information -->
     <PackageId>Cerebras.Cloud.Sdk.Unofficial</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Your Name</Authors>
-    <Description>An unofficial .NET SDK for the Cerebras Cloud API</Description>
-    <PackageProjectUrl>https://github.com/yourusername/cerebras-cloud-sdk-dotnet</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/yourusername/cerebras-cloud-sdk-dotnet</RepositoryUrl>
+    <Authors>Rivoli.AI</Authors>
+    <Company>Rivoli.AI</Company>
+    <Product>Cerebras Cloud SDK for .NET</Product>
+    <Description>An unofficial .NET SDK for the Cerebras Cloud API, providing easy access to Cerebras AI's language models including chat completions, text completions, and tool calling functionality.</Description>
+    <Copyright>Copyright © 2025 Rivoli AI</Copyright>
+    <PackageProjectUrl>https://github.com/rivoli-ai/cerebras-cloud-sdk-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/rivoli-ai/cerebras-cloud-sdk-dotnet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>cerebras;ai;llm;api;sdk;chat;completion;tool-calling;machine-learning;nlp</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageTags>cerebras;ai;llm;sdk;cloud;api</PackageTags>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Initial release with support for chat completions, text completions, and tool calling.</PackageReleaseNotes>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    
+    <!-- Build settings -->
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +40,7 @@
 
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -40,11 +40,8 @@ internal class CerebrasClientOptionsValidator : IValidateOptions<CerebrasClientO
             return ValidateOptionsResult.Fail("MaxRetries cannot be negative");
         }
 
-        if (string.IsNullOrWhiteSpace(options.ApiKey) && 
-            string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("CEREBRAS_API_KEY")))
-        {
-            return ValidateOptionsResult.Fail("ApiKey is required. Set it in configuration or via CEREBRAS_API_KEY environment variable.");
-        }
+        // API key validation is handled by the services that use it
+        // This allows environment variable to be set after options are configured
 
         return ValidateOptionsResult.Success;
     }

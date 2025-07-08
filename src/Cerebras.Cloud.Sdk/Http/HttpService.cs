@@ -37,12 +37,6 @@ internal class HttpService : IHttpService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
-        // If API key is not set in options, try to get it from environment variable
-        if (string.IsNullOrWhiteSpace(_options.ApiKey))
-        {
-            _options.ApiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
-        }
-
         // Build user agent with platform info
         _userAgent = BuildUserAgent();
 
@@ -177,6 +171,10 @@ internal class HttpService : IHttpService
         if (!string.IsNullOrWhiteSpace(_options.ApiKey))
         {
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _options.ApiKey);
+        }
+        else
+        {
+            throw new InvalidOperationException("API key is required. Set it in configuration or via CEREBRAS_API_KEY environment variable.");
         }
 
         // Add user agent

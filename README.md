@@ -356,25 +356,25 @@ dotnet run --project examples/Cerebras.Cloud.Sdk.Examples/Cerebras.Cloud.Sdk.Exa
 
 This SDK implements the complete Cerebras Cloud API surface:
 
-- ✅ **Chat Completions** (`/v1/chat/completions`)
+- **Chat Completions** (`/v1/chat/completions`)
   - Streaming and non-streaming
   - Tool/function calling
   - JSON mode
   - System messages
   - All parameters (temperature, top_p, frequency_penalty, etc.)
   
-- ✅ **Text Completions** (`/v1/completions`)
+- **Text Completions** (`/v1/completions`)
   - Streaming and non-streaming
   - Multiple prompts
   - Echo mode
   - Suffix support
   - Logit bias
   
-- ✅ **Models** (`/v1/models`)
+- **Models** (`/v1/models`)
   - List available models
   - Retrieve model details
   
-- ✅ **Error Handling**
+- **Error Handling**
   - Typed exceptions
   - Automatic retry with exponential backoff
   - Request timeout configuration
