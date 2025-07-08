@@ -12,6 +12,7 @@
     <Copyright>Copyright © $(CurrentYear) $(Company)</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/rivoli-ai/cerebras-cloud-sdk-dotnet</PackageProjectUrl>
+    <PackageDocumentationUrl>https://rivoli-ai.github.io/cerebras-cloud-sdk-dotnet/</PackageDocumentationUrl>
     <RepositoryUrl>https://github.com/rivoli-ai/cerebras-cloud-sdk-dotnet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>cerebras;ai;llm;sdk;cloud;api;machine-learning</PackageTags>

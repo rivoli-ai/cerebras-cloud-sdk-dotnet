@@ -2,6 +2,8 @@
 
 An unofficial .NET SDK for the Cerebras Cloud API, providing easy integration with Cerebras AI models in your .NET applications.
 
+📚 **[API Documentation](https://rivoli-ai.github.io/cerebras-cloud-sdk-dotnet/)** | 📦 **[NuGet Package](https://www.nuget.org/packages/Cerebras.Cloud.Sdk.Unofficial)** | 🐙 **[GitHub Repository](https://github.com/rivoli-ai/cerebras-cloud-sdk-dotnet)**
+
 ## Features
 
 - **Chat Completions**: Full support for chat-based completions with system, user, and assistant messages
