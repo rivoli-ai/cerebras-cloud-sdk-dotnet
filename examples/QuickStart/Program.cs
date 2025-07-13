@@ -278,10 +278,10 @@ class Program
 
     private static async Task Example6_BackwardCompatibility(IServiceProvider serviceProvider)
     {
-        Console.WriteLine("Example 6: Backward Compatibility (Legacy Client)");
-        Console.WriteLine("------------------------------------------------");
+        Console.WriteLine("Example 6: Backward Compatibility (Legacy SDK)");
+        Console.WriteLine("----------------------------------------------");
         
-        // Get the legacy client interface
+        // Get the legacy SDK interface (both SDKs use the same API endpoints)
         var legacyClient = serviceProvider.GetRequiredService<ICerebrasClient>();
         
         var response = await legacyClient.GenerateCompletionAsync(new CompletionRequest
