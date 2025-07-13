@@ -2,6 +2,82 @@
 
 An unofficial .NET SDK for the Cerebras Cloud API, providing easy integration with Cerebras AI models in your .NET applications.
 
+📚 **[API Documentation](https://rivoli-ai.github.io/cerebras-cloud-sdk-dotnet/)** | 📦 **[NuGet Package](https://www.nuget.org/packages/Cerebras.Cloud.Sdk.Unofficial)** | 🐙 **[GitHub Repository](https://github.com/rivoli-ai/cerebras-cloud-sdk-dotnet)**
+
+## Getting Started
+
+### 1. Install the SDK
+
+```bash
+dotnet add package Cerebras.Cloud.Sdk.Unofficial
+```
+
+### 2. Get Your API Key
+
+Sign up at [cloud.cerebras.ai](https://cloud.cerebras.ai) to get your API key.
+
+### 3. Set Your API Key
+
+Never hardcode your API key in your source code. Use environment variables or secure configuration.
+
+> **Security Note**: The API key `csk-1234567890abcdef1234567890abcdef` used in these examples is a fake key for demonstration purposes. Replace it with your actual API key from [cloud.cerebras.ai](https://cloud.cerebras.ai).
+
+**Option 1: Environment Variable (Recommended)**
+```bash
+# Windows
+set CEREBRAS_API_KEY=csk-1234567890abcdef1234567890abcdef
+
+# Linux/macOS
+export CEREBRAS_API_KEY=csk-1234567890abcdef1234567890abcdef
+```
+
+**Option 2: appsettings.json (Don't commit to source control!)**
+```json
+{
+  "CerebrasClient": {
+    "ApiKey": "csk-1234567890abcdef1234567890abcdef"
+  }
+}
+```
+
+**Option 3: User Secrets (for development)**
+```bash
+dotnet user-secrets init
+dotnet user-secrets set "CerebrasClient:ApiKey" "csk-1234567890abcdef1234567890abcdef"
+```
+
+### 4. Your First Request
+
+```csharp
+using Cerebras.Cloud.Sdk;
+using Cerebras.Cloud.Sdk.Chat;
+using Microsoft.Extensions.DependencyInjection;
+
+// Set up dependency injection
+var services = new ServiceCollection();
+services.AddCerebrasClientV2(options =>
+{
+    // API key will be loaded from environment variable automatically
+    // Or you can set it explicitly (not recommended for production):
+    // options.ApiKey = "csk-1234567890abcdef1234567890abcdef";
+});
+
+var serviceProvider = services.BuildServiceProvider();
+var client = serviceProvider.GetRequiredService<ICerebrasClientV2>();
+
+// Make your first chat request
+var response = await client.Chat.CreateAsync(new ChatCompletionRequest
+{
+    Model = "llama-3.3-70b",
+    Messages = new List<ChatMessage>
+    {
+        new() { Role = "user", Content = "Hello! How are you?" }
+    }
+});
+
+Console.WriteLine(response.Choices[0].Message.Content);
+```
+
 ## Features
 
 - **Chat Completions**: Full support for chat-based completions with system, user, and assistant messages
@@ -14,11 +90,21 @@ An unofficial .NET SDK for the Cerebras Cloud API, providing easy integration wi
 - **Comprehensive Logging**: Detailed logging for debugging and monitoring
 - **Type-safe Models**: Strongly typed request/response models with IntelliSense support
 
-## Installation
+## SDK Versions
 
-```bash
-dotnet add package Cerebras.Cloud.Sdk.Unofficial
-```
+This SDK provides two client interfaces that both communicate with the same Cerebras API v1 endpoints (`https://api.cerebras.ai/v1/`):
+
+- **Modern SDK (`ICerebrasClientV2`)** - Recommended for new projects
+  - Service-oriented architecture with dedicated services for Chat, Completions, and Models
+  - Full support for advanced features like tool calling, structured responses, and logprobs
+  - Better separation of concerns and more idiomatic .NET design
+  
+- **Legacy SDK (`ICerebrasClient`)** - For backward compatibility
+  - Simple, flat interface with direct methods
+  - Basic completion operations only
+  - Limited feature set
+
+**Important:** Both SDKs use the same Cerebras API endpoints. The "V2" refers to the SDK architecture, not the API version.
 
 ## Quick Start
 
@@ -28,11 +114,13 @@ dotnet add package Cerebras.Cloud.Sdk.Unofficial
 using Cerebras.Cloud.Sdk;
 using Cerebras.Cloud.Sdk.Chat;
 
-// Option 1: Using the enhanced client (recommended)
+// Using the modern SDK (recommended)
 var services = new ServiceCollection();
 services.AddCerebrasClientV2(options =>
 {
-    options.ApiKey = "your-api-key-here"; // Or set via CEREBRAS_API_KEY environment variable
+    // API key is loaded from CEREBRAS_API_KEY environment variable by default
+    // Or set explicitly (not recommended for production):
+    // options.ApiKey = "csk-1234567890abcdef1234567890abcdef";
 });
 
 var serviceProvider = services.BuildServiceProvider();
@@ -120,7 +208,7 @@ builder.Services.AddCerebrasClientV2(builder.Configuration);
 // Or with custom configuration
 builder.Services.AddCerebrasClientV2(options =>
 {
-    options.ApiKey = "your-api-key";
+    options.ApiKey = Environment.GetEnvironmentVariable("CEREBRAS_API_KEY");
     options.DefaultModel = "llama-3.3-70b";
     options.TimeoutSeconds = 60;
 });
@@ -151,12 +239,12 @@ public class MyService
 }
 ```
 
-### Legacy Client Support
+### Legacy SDK Support
 
 The original `ICerebrasClient` interface is still supported for backward compatibility:
 
 ```csharp
-// Using the legacy client
+// Using the legacy SDK
 services.AddCerebrasClient(configuration);
 
 // Inject and use
@@ -168,8 +256,23 @@ public class LegacyService
     {
         _client = client;
     }
+    
+    public async Task<string> GenerateTextAsync(string prompt)
+    {
+        // Legacy SDK uses simpler API
+        var response = await _client.GenerateCompletionAsync(new CompletionRequest
+        {
+            Model = "llama-3.3-70b",
+            Prompt = prompt,
+            MaxTokens = 100
+        });
+        
+        return response.Text;
+    }
 }
 ```
+
+**Note:** Both the modern and legacy SDKs communicate with the same Cerebras API endpoints. Choose based on your feature needs, not API version concerns.
 
 ## Configuration
 
@@ -178,7 +281,7 @@ The SDK can be configured through code or via appsettings.json:
 ```json
 {
   "CerebrasClient": {
-    "ApiKey": "your-api-key-here",
+    "ApiKey": "csk-1234567890abcdef1234567890abcdef",
     "BaseUrl": "https://api.cerebras.ai/v1/",
     "DefaultModel": "llama-3.3-70b",
     "DefaultTemperature": 0.7,
@@ -330,7 +433,7 @@ catch (HttpRequestException ex)
 dotnet test --filter "FullyQualifiedName~Unit"
 
 # Run integration tests (requires CEREBRAS_API_KEY environment variable)
-export CEREBRAS_API_KEY=your-api-key
+export CEREBRAS_API_KEY=csk-1234567890abcdef1234567890abcdef
 dotnet test --filter "FullyQualifiedName~Integration"
 
 # Run tests with coverage
@@ -343,7 +446,7 @@ reportgenerator -reports:./TestResults/*/coverage.cobertura.xml -targetdir:./cov
 
 ```bash
 # Set your API key
-export CEREBRAS_API_KEY=your-api-key
+export CEREBRAS_API_KEY=csk-1234567890abcdef1234567890abcdef
 
 # Run the quick start example
 ./scripts/run-example.sh
